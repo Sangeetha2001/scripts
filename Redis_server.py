@@ -1,59 +1,61 @@
 #!/usr/bin/python3
 
-#Installing Redis server
-
 import os
 import sys
 import subprocess
 from datetime import datetime
 import tarfile
 
-# Only allow root user to execute the script.
-if os.geteuid()==0:
-  print('Allowed to execute.')
+# Allow root user to execute.
+if os.geteuid() == 0:
+    print('Allow root user to execute!...')
 else:
-  print('Access denied. Execute as Sudoer.')
+  print('Access denied!...')
 
-#defining functions
-#Download Redis
+# Downloading Redis server.
 def download_redis():
- redis_url="http://download.redis.io/releases/redis-4.0.9.tar.gz"
- subprocess.run(["wget", redis_url])
- print('Downloaded successfully!!!')
+    subprocess.run(["wget", "http://download.redis.io/releases/redis-4.0.9.tar.gz"])
+    print("Redis server downloaded successfully!...")
 
-#Extract Redis
+# Extracting Redis server.
 def extract_redis():
- subprocess.run(["tar", "xvzf", "redis-4.0.9.tar.gz"])
- print('Extracted successfully!!!')
+    subprocess.run(["tar", "xvzf", "redis-4.0.9.tar.gz"])
+    print("Extracted Redis server successfully!...")
 
-#Compile Redis
+# Compiling Redis server.
 def compile_redis():
-  os.chdir("redis-4.0.9")
-  subprocess.run(["make"])
-  print('Compiled successfully!!!')
+    os.chdir("redis-4.0.9")
+    subprocess.run(["sudo", "make"])
+    print("Redis server compiled successfully!...")
 
-#Install redis
-def install_redis(): 
-  os.chdir("redis-4.0.9") 
-  subprocess.run(["make", "install"])
-  print('Installation Done...') 
-
-#Run redis
+# Run Redis server.
 def run_redis():
-  subprocess.run(["redis-server"])
-  print('Redis running successfully!!!')
+    subprocess.run(["redis-server"])
+    print("Redis server is running!...")
 
-#Check status of Redis server.
+# Installing Redis server.
+def install_redis():
+    os.chdir("redis-4.0.9")
+    subprocess.run(["sudo", "apt", "update"])
+    print("Redis server updated successfully!...")
+    subprocess.run(["sudo", "apt", "install", "-y", "redis-server"])
+    print("Redis server installed successfully!...")
+
+# Stop Redis server.
+def stop_redis():
+    subprocess.run(["sudo", "systemctl", "stop", "redis-server"])
+    print("Redis server stopped successfully!...")
+
+# Check status of Redis server.
 def status_redis():
     subprocess.run(["sudo", "service", "redis-server", "status"])
     print("Redis server status checked successfully!...")
 
-#Starting Redis Server
+# Start Redis server.
 def start_redis():
-  subprocess.run(["sudo","service", "redis-server", "start"])
-  print('Redis Server Started!!!')
+    subprocess.run(["sudo", "service", "redis-server", "start"])
+    print("Redis server started successfully!...")
 
-#Backup the files of Redis Server
 def backup_redis():
     print("Backing up Redis database...")
     # Define backup directory and file names
@@ -107,34 +109,25 @@ def backup_redis():
         print(f"An error occurred while copying the RDB file: {e}")
     except Exception as e:
         print(f"An error occurred: {e}")
-        print('Redis backup is completed')
-
-#Stopping Redis Server
-def stop_redis():
- subprocess.run(["sudo", "service", "redis-server", "stop"])
- print('Redis Server Stopped!!!') 
-# Checking Status of Redis Server
-def status_redis():
- subprocess.run(["systemctl", "status", "redis.service"])
- print('Status executed...')
-
-if sys.argv[1]=='download':
-  download_redis()
-elif sys.argv[1]=='extract':
-  extract_redis() 
-elif sys.argv[1]=='compile':
-  compile_redis()
-elif sys.argv[1]=='run':
-  run_redis()
-elif sys.argv[1]=='install':
-  install_redis()
-elif sys.argv[1]=='start':
-  start_redis()
-elif sys.argv[1]=='status':
-  status_redis()
-elif sys.argv[1]=='backup':
-  backup_redis()
-elif sys.argv[1]=='stop':
-  stop_redis()
+        
+#calling function to be executed.
+if sys.argv[1] == 'download':
+    download_redis()
+elif sys.argv[1] == 'extract':
+    extract_redis()
+elif sys.argv[1] == 'compile':
+    compile_redis()
+elif sys.argv[1] == 'run':
+    run_redis()
+elif sys.argv[1] == 'status':
+    status_redis()
+elif sys.argv[1] == 'install':
+    install_redis()
+elif sys.argv[1] == 'stop':
+    stop_redis()
+elif sys.argv[1] == 'start':
+    start_redis()
+elif sys.argv[1] == 'backup':
+    backup_redis()
 else:
-  print('Help: ./redis.py {download|extract|compile|install|start|status|stop|backup}')
+    print('Error/help: ./system-metric.py {download|extract|compile|run|backup}\n')
